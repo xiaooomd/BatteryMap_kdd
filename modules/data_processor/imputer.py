@@ -10,7 +10,7 @@ class MissingValueImputer:
     Responsible for filling NaNs in DataFrames based on missing counts and dataset-specific rules.
     """
     def __init__(self):
-        self.logger = logging.getLogger("BatteryFeatureProject.Imputer")
+        self.logger = logging.getLogger("FeatureSelection.Imputer")
         self.battery_data_dict = {} # Reference to all currently processed battery data
         self.dataset_name = ""
         self.global_means = {}      # Global mean cache {col: mean}
@@ -217,3 +217,4 @@ class MissingValueImputer:
             return np.mean(neighbor_values)
 
         return None
+

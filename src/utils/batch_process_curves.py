@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(project_root))
 
-from src.utils.feature_tools import extract_ic_dv_features, identify_phases
+from src.physics.ic_dv_extractor import extract_ic_dv_features, identify_phases
 from src.utils.plot_tools import plot_aggregated_icdv
 
 # Suppress warnings

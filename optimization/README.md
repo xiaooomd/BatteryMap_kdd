@@ -6,7 +6,7 @@
 
 ### 辅助工具
 - **`apply_multi_dataset_patch.py`**: 方案A补丁工具
-  - 为 `hyperparameter_optimization.py` 添加多数据集聚合支持
+  - 为 `scripts/hyperparameter_optimization.py` 添加多数据集聚合支持
   - 自动备份原文件
   - 使用方法: `python optimization/apply_multi_dataset_patch.py`
 
@@ -20,16 +20,16 @@
   - 推荐工作流
   - 文档导航
 
-## 🚀 主要运行脚本（在根目录）
+## 🚀 主要运行入口
 
 ### 单数据集或多数据集聚合（方案A）
 ```bash
-python hyperparameter_optimization.py --method pso --model MLP --dataset HUST
+python run.py hyperopt --method pso --model MLP --dataset HUST
 ```
 
 ### 多数据集并行独立优化（方案C）⭐ 推荐
 ```bash
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso --model MLP \
     --gpus 0 1 2
@@ -37,7 +37,7 @@ python run_multi_dataset_optimization.py \
 
 ### 交互式启动
 ```bash
-python run_hyperparam_search.py
+python run.py hyperopt-batch
 ```
 
 ## 📚 完整文档
@@ -64,14 +64,14 @@ python run_hyperparam_search.py
 
 1. **测试单数据集优化**
    ```bash
-   python hyperparameter_optimization.py \
+   python run.py hyperopt \
        --method pso --model MLP --dataset HUST \
        --n_particles 10 --n_iterations 20
    ```
 
 2. **测试多数据集并行优化** ⭐
    ```bash
-   python run_multi_dataset_optimization.py \
+   python run.py multi-dataset-opt \
        --datasets HUST CALB CALCE \
        --method pso --model MLP \
        --n_particles 10 --n_iterations 20 \

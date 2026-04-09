@@ -33,7 +33,7 @@ task_name=classification
 # domain adaptation loss weight
 DA_weight=1.0
 
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch --multi_gpu  --num_processes $num_process --num_machines 1 --mixed_precision no --dynamo_backend no --main_process_port $master_port domainAdaptation.py \
+CUDA_VISIBLE_DEVICES=0,1 accelerate launch --multi_gpu  --num_processes $num_process --num_machines 1 --mixed_precision no --dynamo_backend no --main_process_port $master_port scripts/domainAdaptation.py \
   --task_name $task_name \
   --data $data \
   --is_training 1 \
@@ -73,4 +73,5 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch --multi_gpu  --num_processes $num_pro
   --checkpoints $checkpoints \
   --target_dataset $target_dataset \
   --DA_weight $DA_weight
+
 

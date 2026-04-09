@@ -1,10 +1,10 @@
 """
-Patch script to add multi-dataset aggregation support to hyperparameter_optimization.py.
+Patch script to add multi-dataset aggregation support to scripts/hyperparameter_optimization.py.
 
 Usage:
     python apply_multi_dataset_patch.py
 
-This script will automatically modify hyperparameter_optimization.py to support Scheme A (multi-dataset aggregated optimization).
+This script will automatically modify scripts/hyperparameter_optimization.py to support Scheme A (multi-dataset aggregated optimization).
 """
 
 import re
@@ -13,10 +13,10 @@ from pathlib import Path
 
 def apply_patch():
     """应用补丁."""
-    file_path = Path('hyperparameter_optimization.py')
+    file_path = Path(__file__).resolve().parents[1] / 'scripts' / 'hyperparameter_optimization.py'
     
     if not file_path.exists():
-        print("错误: 找不到 hyperparameter_optimization.py")
+        print("错误: 找不到 scripts/hyperparameter_optimization.py")
         return False
     
     # 读取原文件
@@ -24,7 +24,7 @@ def apply_patch():
         content = f.read()
     
     # 备份
-    backup_path = Path('hyperparameter_optimization_before_patch.py')
+    backup_path = Path(__file__).resolve().parents[1] / 'scripts' / 'hyperparameter_optimization_before_patch.py'
     with open(backup_path, 'w', encoding='utf-8') as f:
         f.write(content)
     print(f"✓ 已备份原文件到: {backup_path}")
@@ -240,7 +240,7 @@ def run_multi_dataset_experiment(params: Dict[str, Any],
 
 if __name__ == '__main__':
     print("="*80)
-    print("为 hyperparameter_optimization.py 应用多数据集支持补丁")
+    print("为 scripts/hyperparameter_optimization.py 应用多数据集支持补丁")
     print("="*80 + "\n")
     
     success = apply_patch()
@@ -250,8 +250,8 @@ if __name__ == '__main__':
         print("\n下一步:")
         print("1. 查看 docs/MULTI_DATASET_OPTIMIZATION.md 了解详细用法")
         print("2. 测试单数据集模式是否仍正常工作:")
-        print("   python hyperparameter_optimization.py --method pso --model MLP --dataset HUST")
+        print("   python run.py hyperopt --method pso --model MLP --dataset HUST")
         print("3. 测试多数据集模式:")
-        print("   python hyperparameter_optimization.py --method pso --model MLP --datasets HUST CALB --aggregation mean")
+        print("   python run.py hyperopt --method pso --model MLP --datasets HUST CALB --aggregation mean")
     else:
         print("\n✗ 补丁应用失败")

@@ -134,6 +134,40 @@ FEATURE_MODE_SEARCH_SPACE = {
 }
 
 
+# DACNet model search space
+DACNET_SEARCH_SPACE = {
+    'seg_len': [5, 10, 20],
+    'n_basis': [2, 3, 4],
+    'dropout': [0.0, 0.1, 0.2],
+    'learning_rate': [0.001, 0.0005, 0.0001],
+    'batch_size': [16, 32, 64],
+    'd_model': [16, 32, 64],
+}
+
+
+# DegradeBEATS model search space
+DEGRADEBEATS_SEARCH_SPACE = {
+    'encoder_type': ['cnn', 'mlp'],
+    'cnn_channels': [8, 16, 32],
+    'n_mixer_layers': [1, 2, 3],
+    'dropout': [0.0, 0.1, 0.2],
+    'learning_rate': [0.001, 0.0005, 0.0001],
+    'batch_size': [16, 32, 64],
+}
+
+
+# TrendSpec model search space
+TRENDSPEC_SEARCH_SPACE = {
+    'top_k': [2, 4, 8],
+    'w3_min': (0.01, 0.1),
+    'w3_max': (1.0, 10.0),
+    'ridge_lambda': (1e-5, 1e-3),
+    'dropout': [0.0, 0.1, 0.2],
+    'learning_rate': [0.001, 0.0005, 0.0001],
+    'batch_size': [16, 32, 64],
+}
+
+
 # PSO continuous search space example (for particle swarm optimization)
 # Note: Continuous space is represented by a tuple (min, max)
 PSO_CONTINUOUS_SPACE = {
@@ -187,6 +221,12 @@ def get_search_space(model_name: str, feature_type: str = 'curve') -> Dict[str, 
         return AUTOFORMER_SEARCH_SPACE.copy()
     elif model_name == 'MICN':
         return MICN_SEARCH_SPACE.copy()
+    elif model_name == 'DACNET':
+        return DACNET_SEARCH_SPACE.copy()
+    elif model_name == 'DEGRADEBEATS':
+        return DEGRADEBEATS_SEARCH_SPACE.copy()
+    elif model_name == 'TRENDSPEC':
+        return TRENDSPEC_SEARCH_SPACE.copy()
     else:
         # Default to common search space
         print(f"Warning: No dedicated search space configuration for model {model_name}, using common configuration")
