@@ -31,7 +31,7 @@ comment='CPMLP'
 task_name=classification
 
 
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch  --multi_gpu --num_processes $num_process --num_machines 1 --mixed_precision no --dynamo_backend no --main_process_port $master_port finetune.py \
+CUDA_VISIBLE_DEVICES=0,1 accelerate launch  --multi_gpu --num_processes $num_process --num_machines 1 --mixed_precision no --dynamo_backend no --main_process_port $master_port scripts/finetune.py \
   --args_path $args_path \
   --batch_size $batch_size \
   --finetune_dataset $finetune_dataset \
@@ -69,3 +69,4 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch  --multi_gpu --num_processes $num_pro
   --lradj $lradj \
   --loss $loss \
   --checkpoints $checkpoints \
+

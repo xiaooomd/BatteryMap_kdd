@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 import shutil
+import random
 from sklearn.metrics import mean_absolute_error
 from tqdm import tqdm
 import evaluate
@@ -10,11 +11,27 @@ from scipy.signal.windows import gaussian
 from sklearn.metrics import root_mean_squared_error, mean_absolute_percentage_error
 import time
 from torch import nn
-import wandb
 import os
 import pandas as pd
 
 plt.switch_backend('agg')
+
+
+def set_seed(seed):
+    """Set random seed for reproducibility across all libraries."""
+    try:
+        import accelerate
+        accelerate.utils.set_seed(seed)
+    except (ImportError, AttributeError):
+        pass
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.enabled = False
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 def check_csv_integrity(file_path, early_cycle_threshold=100):
     """
@@ -272,7 +289,16 @@ def vali_baseline(args, accelerator, model, vali_data, vali_loader, criterion, c
             labels = labels.float().to(accelerator.device)
 
             # encoder - decoder
-            outputs = model(cycle_curve_data, curve_attn_mask)
+            # Mirror training logic: Transformer-family needs decoder inputs in extracted_features mode
+            if args.feature_type == 'extracted_features' and args.model in ['Transformer', 'Informer', 'Autoformer', 'Reformer']:
+                batch_size, seq_len, _ = cycle_curve_data.shape
+                pred_len = args.pred_len
+                x_mark_enc = torch.zeros(batch_size, seq_len, 4).float().to(accelerator.device)
+                x_mark_dec = torch.zeros(batch_size, pred_len, 4).float().to(accelerator.device)
+                x_dec = torch.zeros(batch_size, pred_len, args.dec_in).float().to(accelerator.device)
+                outputs = model(cycle_curve_data, x_mark_enc, x_dec, x_mark_dec)
+            else:
+                outputs = model(cycle_curve_data, curve_attn_mask)
 
             # Handling scalar output for early_prediction
             if args.task_type == 'early_prediction':

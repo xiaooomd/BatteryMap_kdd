@@ -9,7 +9,7 @@ class SingleBatteryCleaner:
     Includes: Median filter outlier detection and repair, relative value calculation.
     """
     def __init__(self):
-        self.logger = logging.getLogger("BatteryFeatureProject.SingleBatteryCleaner")
+        self.logger = logging.getLogger("FeatureSelection.SingleBatteryCleaner")
         # These columns do not have relative values calculated
         self.skip_relative_cols = [
             'rate', 'charge_rate', 'discharge_rate',
@@ -99,7 +99,7 @@ class DatasetCleaner:
     Includes: constant removal, all-empty removal, high missing rate removal.
     """
     def __init__(self):
-        self.logger = logging.getLogger("BatteryFeatureProject.DatasetCleaner")
+        self.logger = logging.getLogger("FeatureSelection.DatasetCleaner")
         self.dropped_info = {}
 
     def process(self, df: pd.DataFrame, manual_drop_cols: List[str] = None) -> pd.DataFrame:
@@ -146,3 +146,4 @@ class DatasetCleaner:
 
         self.logger.info(f"Dataset cleaning completed. Final shape: {df.shape}")
         return df
+

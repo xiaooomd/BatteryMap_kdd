@@ -31,7 +31,7 @@ class DataLoader:
         self.label_dir = Path(label_dir)
         self.nrows = nrows
         self.early_cycle_threshold = early_cycle_threshold
-        self.logger = logging.getLogger("BatteryFeatureProject.DataLoader")
+        self.logger = logging.getLogger("FeatureSelection.DataLoader")
 
     def get_available_datasets(self) -> List[str]:
         """Scans the feature directory and returns available dataset IDs (folder names)."""
@@ -39,9 +39,12 @@ class DataLoader:
             self.logger.error(f"Feature directory not found or not a directory: {self.feature_dir}")
             return []
         try:
-            # List only directories
+            # List only dataset directories that contain feature CSV files.
+            # This avoids picking helper folders like "*_curves".
             dataset_folders = sorted([
-                d.name for d in self.feature_dir.iterdir() if d.is_dir()
+                d.name
+                for d in self.feature_dir.iterdir()
+                if d.is_dir() and not d.name.lower().endswith("_curves") and any(d.glob("*.csv"))
             ])
             return dataset_folders
         except Exception as e:
@@ -127,8 +130,9 @@ class DataLoader:
 
                 try:
                     # Read only first nrows (early cycles)
-                    # Handle cases where file has fewer rows automatically by pandas
-                    df_part = pd.read_csv(file_path, header=0, nrows=self.nrows)
+                    # Support nrows=-1 or None for all cycles
+                    actual_nrows = self.nrows if self.nrows is not None and self.nrows > 0 else None
+                    df_part = pd.read_csv(file_path, header=0, nrows=actual_nrows)
 
                     if not df_part.empty:
                         battery_data_dict[battery_id] = {
@@ -147,3 +151,4 @@ class DataLoader:
 
             self.logger.info(f"Loaded dataset '{dataset_id}' with {len(battery_data_dict)} samples.")
             yield dataset_id, battery_data_dict
+

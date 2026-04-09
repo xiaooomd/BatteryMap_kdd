@@ -105,8 +105,8 @@ def plot_ic_dv_curves(
     if cycle_num != 1 and cycle_num % plot_interval != 0:
         return
 
-    # Create subfolder for plots if it doesn't exist
-    plot_dir = output_dir.parent / f"{output_dir.name}_curves"
+    # Store curve plots under results/curves/{dataset} to keep results/features clean.
+    plot_dir = output_dir.parents[1] / "curves" / output_dir.name
     plot_dir.mkdir(parents=True, exist_ok=True)
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))

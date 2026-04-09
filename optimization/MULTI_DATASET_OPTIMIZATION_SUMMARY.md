@@ -9,7 +9,7 @@
 - ✅ 自动失败容错机制
 
 ### 方案C：并行独立优化（定制参数）⭐ 推荐
-- ✅ 创建独立脚本 `run_multi_dataset_optimization.py`
+- ✅ 创建独立脚本 `scripts/run_multi_dataset_optimization.py`
 - ✅ 支持6个GPU × 每GPU 4任务 = 最多24并行
 - ✅ 自动GPU分配和任务调度
 - ✅ 失败任务跳过，不影响其他数据集
@@ -30,7 +30,7 @@
 
 **1. 快速测试（3个数据集）**
 ```bash
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
     --model MLP \
@@ -43,7 +43,7 @@ python run_multi_dataset_optimization.py \
 
 **2. 完整优化（17个数据集）**
 ```bash
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE MIT MATR SNL ISU_ILCC NA RWTH Stanford XJTU HNEI MICH MICH_EXP UL_PUR Tongji ZNion \
     --method pso \
     --model MLP \
@@ -63,7 +63,7 @@ python apply_multi_dataset_patch.py
 
 **2. 运行优化**
 ```bash
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method pso \
     --model MLP \
     --datasets HUST CALB CALCE \
@@ -94,7 +94,7 @@ python hyperparameter_optimization.py \
 
 ### 阶段1：快速探索（方案C，轻量级）
 ```bash
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
     --model MLP \
@@ -108,7 +108,7 @@ python run_multi_dataset_optimization.py \
 
 ### 阶段2：深度优化（方案C，充分迭代）
 ```bash
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
     --model MLP \
@@ -126,7 +126,7 @@ python run_multi_dataset_optimization.py \
 python apply_multi_dataset_patch.py
 
 # 测试是否存在通用参数
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method pso \
     --model MLP \
     --datasets HUST CALB CALCE \
@@ -249,7 +249,7 @@ hyperparam_search_results/
 conda activate batterylife
 
 # 2. 快速测试（3个数据集，~2小时）
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
     --model MLP \

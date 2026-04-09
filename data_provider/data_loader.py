@@ -14,9 +14,10 @@ import warnings
 import pickle
 from sklearn.cluster import k_means
 import torch
-from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import json
+from pathlib import Path
+from typing import Any, Dict
 from torch.nn.utils.rnn import pad_sequence
 try:
     from batteryml.data.battery_data import BatteryData
@@ -27,6 +28,8 @@ from data_provider.data_split_recorder import split_recorder
 import accelerate
 from denseweight import DenseWeight
 warnings.filterwarnings('ignore')
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CAPACITY_LAST_COLUMN_MODELS = {'DACNet', 'DegradeBEATS', 'TrendSpec'}
 datasetName2ids = {
     'CALCE':0,
     'HNEI':1,
@@ -135,126 +138,67 @@ class Dataset_original(Dataset):
         self.need_keys = ['current_in_A', 'voltage_in_V', 'charge_capacity_in_Ah', 'discharge_capacity_in_Ah', 'time_in_s']
         self.aug_helper = BatchAugmentation_battery_revised()
         assert flag in ['train', 'test', 'val']
-        if self.dataset == 'exp':
-            self.train_files = split_recorder.Stanford_train_files[:3]
-            self.val_files = split_recorder.Tongji_val_files[:2] + split_recorder.HUST_val_files[:2]
-            self.test_files =  split_recorder.Tongji_test_files[:2] + split_recorder.HUST_test_files[:2]
-        elif self.dataset == 'Tongji':
-            self.train_files = split_recorder.Tongji_train_files
-            self.val_files = split_recorder.Tongji_val_files
-            self.test_files = split_recorder.Tongji_test_files
-        elif self.dataset == 'HUST':
-            self.train_files = split_recorder.HUST_train_files
-            self.val_files = split_recorder.HUST_val_files
-            self.test_files = split_recorder.HUST_test_files
-        elif self.dataset == 'MATR':
-            self.train_files = split_recorder.MATR_train_files
-            self.val_files = split_recorder.MATR_val_files
-            self.test_files = split_recorder.MATR_test_files
-        elif self.dataset == 'SNL':
-            self.train_files = split_recorder.SNL_train_files
-            self.val_files = split_recorder.SNL_val_files
-            self.test_files = split_recorder.SNL_test_files
-        elif self.dataset == 'MICH':
-            self.train_files = split_recorder.MICH_train_files
-            self.val_files = split_recorder.MICH_val_files
-            self.test_files = split_recorder.MICH_test_files
-        elif self.dataset == 'MICH_EXP':
-            self.train_files = split_recorder.MICH_EXP_train_files
-            self.val_files = split_recorder.MICH_EXP_val_files
-            self.test_files = split_recorder.MICH_EXP_test_files
-        elif self.dataset == 'UL_PUR':
-            self.train_files = split_recorder.UL_PUR_train_files
-            self.val_files = split_recorder.UL_PUR_val_files
-            self.test_files = split_recorder.UL_PUR_test_files
-        elif self.dataset == 'RWTH':
-            self.train_files = split_recorder.RWTH_train_files
-            self.val_files = split_recorder.RWTH_val_files
-            self.test_files = split_recorder.RWTH_test_files
-        elif self.dataset == 'HNEI':
-            self.train_files = split_recorder.HNEI_train_files
-            self.val_files = split_recorder.HNEI_val_files
-            self.test_files = split_recorder.HNEI_test_files
-        elif self.dataset == 'CALCE':
-            self.train_files = split_recorder.CALCE_train_files
-            self.val_files = split_recorder.CALCE_val_files
-            self.test_files = split_recorder.CALCE_test_files
-        elif self.dataset == 'Stanford':
-            self.train_files = split_recorder.Stanford_train_files
-            self.val_files = split_recorder.Stanford_val_files
-            self.test_files = split_recorder.Stanford_test_files
-        elif self.dataset == 'ISU_ILCC':
-            self.train_files = split_recorder.ISU_ILCC_train_files
-            self.val_files = split_recorder.ISU_ILCC_val_files
-            self.test_files = split_recorder.ISU_ILCC_test_files
-        elif self.dataset == 'XJTU':
-            self.train_files = split_recorder.XJTU_train_files
-            self.val_files = split_recorder.XJTU_val_files
-            self.test_files = split_recorder.XJTU_test_files
-        elif self.dataset == 'MIX_large':
-            self.train_files = split_recorder.MIX_large_train_files
-            self.val_files = split_recorder.MIX_large_val_files 
-            self.test_files = split_recorder.MIX_large_test_files
-        elif self.dataset == 'ZN-coin':
-            self.train_files = split_recorder.ZNcoin_train_files
-            self.val_files = split_recorder.ZNcoin_val_files 
-            self.test_files = split_recorder.ZNcoin_test_files  
-        elif self.dataset == 'CALB':
-            self.train_files = split_recorder.CALB_train_files
-            self.val_files = split_recorder.CALB_val_files 
-            self.test_files = split_recorder.CALB_test_files
-        elif self.dataset == 'ZN-coin42':
-            self.train_files = split_recorder.ZN_42_train_files
-            self.val_files = split_recorder.ZN_42_val_files
-            self.test_files = split_recorder.ZN_42_test_files
-        elif self.dataset == 'ZN-coin2024':
-            self.train_files = split_recorder.ZN_2024_train_files
-            self.val_files = split_recorder.ZN_2024_val_files
-            self.test_files = split_recorder.ZN_2024_test_files
-        elif self.dataset == 'CALB42':
-            self.train_files = split_recorder.CALB_42_train_files
-            self.val_files = split_recorder.CALB_42_val_files
-            self.test_files = split_recorder.CALB_42_test_files
-        elif self.dataset == 'CALB2024':
-            self.train_files = split_recorder.CALB_2024_train_files
-            self.val_files = split_recorder.CALB_2024_val_files
-            self.test_files = split_recorder.CALB_2024_test_files
-        elif self.dataset == 'NAion':
-            self.train_files = split_recorder.NAion_2021_train_files
-            self.val_files = split_recorder.NAion_2021_val_files
-            self.test_files = split_recorder.NAion_2021_test_files
-        elif self.dataset == 'NAion42':
-            self.train_files = split_recorder.NAion_42_train_files
-            self.val_files = split_recorder.NAion_42_val_files
-            self.test_files = split_recorder.NAion_42_test_files
-        elif self.dataset == 'NAion2024':
-            self.train_files = split_recorder.NAion_2024_train_files
-            self.val_files = split_recorder.NAion_2024_val_files
-            self.test_files = split_recorder.NAion_2024_test_files
         
+        # P1-2: Dictionary-based routing replaces 100 lines of if-elif
+        _SR = split_recorder
+        _MAPPING = {
+            'exp':          (_SR.Stanford_train_files[:3], _SR.Tongji_val_files[:2] + _SR.HUST_val_files[:2], _SR.Tongji_test_files[:2] + _SR.HUST_test_files[:2]),
+            'Tongji':       (_SR.Tongji_train_files,    _SR.Tongji_val_files,     _SR.Tongji_test_files),
+            'HUST':         (_SR.HUST_train_files,      _SR.HUST_val_files,       _SR.HUST_test_files),
+            'MATR':         (_SR.MATR_train_files,      _SR.MATR_val_files,       _SR.MATR_test_files),
+            'SNL':          (_SR.SNL_train_files,       _SR.SNL_val_files,        _SR.SNL_test_files),
+            'MICH':         (_SR.MICH_train_files,      _SR.MICH_val_files,       _SR.MICH_test_files),
+            'MICH_EXP':     (_SR.MICH_EXP_train_files,  _SR.MICH_EXP_val_files,   _SR.MICH_EXP_test_files),
+            'UL_PUR':       (_SR.UL_PUR_train_files,    _SR.UL_PUR_val_files,     _SR.UL_PUR_test_files),
+            'RWTH':         (_SR.RWTH_train_files,      _SR.RWTH_val_files,       _SR.RWTH_test_files),
+            'HNEI':         (_SR.HNEI_train_files,      _SR.HNEI_val_files,       _SR.HNEI_test_files),
+            'CALCE':        (_SR.CALCE_train_files,     _SR.CALCE_val_files,      _SR.CALCE_test_files),
+            'Stanford':     (_SR.Stanford_train_files,  _SR.Stanford_val_files,   _SR.Stanford_test_files),
+            'ISU_ILCC':     (_SR.ISU_ILCC_train_files,  _SR.ISU_ILCC_val_files,   _SR.ISU_ILCC_test_files),
+            'XJTU':         (_SR.XJTU_train_files,      _SR.XJTU_val_files,       _SR.XJTU_test_files),
+            'MIX_large':    (_SR.MIX_large_train_files, _SR.MIX_large_val_files,   _SR.MIX_large_test_files),
+            'li_results_ALL': (_SR.li_results_ALL_train_files, _SR.li_results_ALL_val_files, _SR.li_results_ALL_test_files),
+            'ZN-coin':      (_SR.ZNcoin_train_files,    _SR.ZNcoin_val_files,     _SR.ZNcoin_test_files),
+            'CALB':         (_SR.CALB_train_files,      _SR.CALB_val_files,       _SR.CALB_test_files),
+            'ZN-coin42':    (_SR.ZN_42_train_files,     _SR.ZN_42_val_files,      _SR.ZN_42_test_files),
+            'ZN-coin2024':  (_SR.ZN_202_train_files if hasattr(_SR, 'ZN_202_train_files') else _SR.ZN_2024_train_files, 
+                             _SR.ZN_2024_val_files, _SR.ZN_2024_test_files), # Handle possible typo in recorder
+            'CALB42':       (_SR.CALB_42_train_files,   _SR.CALB_42_val_files,    _SR.CALB_42_test_files),
+            'CALB2024':     (_SR.CALB_2024_train_files, _SR.CALB_2024_val_files,  _SR.CALB_2024_test_files),
+            'NAion':        (_SR.NAion_2021_train_files, _SR.NAion_2021_val_files, _SR.NAion_2021_test_files),
+            'NAion42':      (_SR.NAion_42_train_files,  _SR.NAion_42_val_files,   _SR.NAion_42_test_files),
+            'NAion2024':    (_SR.NAion_2024_train_files, _SR.NAion_2024_val_files, _SR.NAion_2024_test_files),
+        }
+
+        # Fix minor typo in recorder if present (The recorder uses ZN_2024 but some code expected ZN_202)
+        if self.dataset == 'ZN-coin2024':
+            self.train_files, self.val_files, self.test_files = _MAPPING['ZN-coin2024']
+        elif self.dataset in _MAPPING:
+            self.train_files, self.val_files, self.test_files = _MAPPING[self.dataset]
+        else:
+            raise ValueError(f"Unknown dataset '{self.dataset}'. Available: {sorted(_MAPPING.keys())}")
+
         if flag == 'train':
-            self.files = [i for i in self.train_files]
+            self.files = self.train_files
         elif flag == 'val':
-            self.files = [i for i in self.val_files]
+            self.files = self.val_files
         elif flag == 'test':
-            self.files = [i for i in self.test_files]
-            if self.dataset == 'ZN-coin42':
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_ZN42.json'))
-            elif self.dataset == 'ZN-coin2024':
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_ZN2024.json'))
-            elif self.dataset == 'CALB42':
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_CALB42.json'))
-            elif self.dataset == 'CALB2024':
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_CALB2024.json'))
-            elif self.dataset == 'NAion':
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_NA2021.json'))
-            elif self.dataset == 'NAion42':
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_NA42.json'))
-            elif self.dataset == 'NAion2024':
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_NA2024.json'))
-            else:
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test.json'))
-            # self.unseen_seen_record = json.load(open(f'{self.root_path}/cal_for_test.json'))
+            self.files = self.test_files
+            
+            # P1-5: Deduplicated unseen/seen record loading logic
+            labels_map = {
+                'ZN-coin42': 'cal_for_test_ZN42.json',
+                'ZN-coin2024': 'cal_for_test_ZN2024.json',
+                'CALB42': 'cal_for_test_CALB42.json',
+                'CALB2024': 'cal_for_test_CALB2024.json',
+                'NAion': 'cal_for_test_NA2021.json',
+                'NAion42': 'cal_for_test_NA42.json',
+                'NAion2024': 'cal_for_test_NA2024.json',
+            }
+            json_file = labels_map.get(self.dataset, 'cal_for_test.json')
+            json_path = os.path.join(self.root_path, 'seen_unseen_labels', json_file)
+            with open(json_path, 'r') as f:
+                self.unseen_seen_record = json.load(f)
         
         self.total_charge_discharge_curves, self.total_curve_attn_masks, self.total_labels, self.unique_labels, self.class_labels, self.total_dataset_ids, self.total_cj_aug_charge_discharge_curves, self.total_seen_unseen_IDs = self.read_data()
         
@@ -743,6 +687,7 @@ class Dataset_CustomFeatures(Dataset):
         self.early_cycle_threshold = args.early_cycle_threshold
         self.n_selected = args.n_selected
         self.seq_len = getattr(args, 'seq_len', 1)  # Default sequence length if not provided
+        self.label_dir = self._resolve_label_dir()
 
         self.data_x = []
         self.data_y = []
@@ -841,24 +786,8 @@ class Dataset_CustomFeatures(Dataset):
         valid_series_list = []
         labels_list = []
 
-        # Pre-load label cache to avoid repeated IO
-        self.label_cache = {} # prefix -> dict
-
-        # Determine label directory
-        label_dir = os.path.join(self.root_path, 'Life labels')
-        if not os.path.exists(label_dir):
-            # Fallback for when root_path is a subdirectory (e.g. dataset/selected_result/CALCE)
-            # Try generic dataset path
-            if os.path.exists(os.path.join('dataset', 'Life labels')):
-                label_dir = os.path.join('dataset', 'Life labels')
-            else:
-                 # Try to look up from root_path
-                 head = os.path.abspath(self.root_path)
-                 for _ in range(3): # Try going up 3 levels
-                     head = os.path.dirname(head)
-                     if os.path.exists(os.path.join(head, 'Life labels')):
-                         label_dir = os.path.join(head, 'Life labels')
-                         break
+        # Pre-load label cache to avoid repeated IO.
+        self.label_cache = {}  # prefix -> dict
 
         for file_path in tqdm(self.file_list, desc=f"Loading {flag} data"):
             try:
@@ -870,46 +799,7 @@ class Dataset_CustomFeatures(Dataset):
                 # Assuming standard naming convention: Prefix_...
 
                 if prefix not in self.label_cache:
-                    # Load the json
-                    label_path = os.path.join(label_dir, f'{prefix}_labels.json')
-                    # Fallback or special cases map (copied from Dataset_original logic if needed)
-                    if prefix == 'MICH':
-                         label_path = os.path.join(label_dir, 'total_MICH_labels.json')
-                    elif prefix.startswith('Tongji'):
-                         label_path = os.path.join(label_dir, 'Tongji_labels.json')
-                    elif prefix == 'NA': # NAion2024 files start with NA-ion, but splitting by '_' gives 'NA-ion'
-                         # Wait, file name is NA-ion_...
-                         pass
-
-                    # Handle prefix mismatch for NA/ZN
-                    # If prefix is 'NA-ion' but label file is 'NAion_labels.json' or 'NA2024_labels.json'?
-                    # Checking Dataset_original:
-                    # NAion2024 -> cal_for_test_NA2024.json (for seen/unseen)
-                    # read_cell_data_according_to_prefix -> NA-ion -> NA-ion_labels.json?
-                    # Actually read_cell_data says: NA-ion -> open(..., 'rb')
-                    # Then line 447: open(..., {prefix}_labels.json)
-                    # So if prefix is NA-ion, it looks for NA-ion_labels.json.
-
-                    # But the datasetName is NAion2024.
-
-                    # Let's check if the file exists.
-                    if not os.path.exists(label_path):
-                        # Try alternatives
-                        if prefix == 'NA-ion':
-                             # Try NA-ion_labels.json (already default) or NAion_labels.json
-                             alt_path = os.path.join(label_dir, 'NA-ion_labels.json')
-                             if os.path.exists(alt_path): label_path = alt_path
-                        elif prefix == 'ZN-coin':
-                             # Try ZN-coin_labels.json (already default)
-                             alt_path = os.path.join(label_dir, 'ZN-coin_labels.json')
-                             if os.path.exists(alt_path): label_path = alt_path
-
-                    if os.path.exists(label_path):
-                        with open(label_path, 'r') as f:
-                            self.label_cache[prefix] = json.load(f)
-                    else:
-                        print(f"Warning: Label file not found for prefix {prefix}: {label_path}")
-                        self.label_cache[prefix] = {}
+                    self.label_cache[prefix] = self._load_label_cache_for_prefix(prefix)
 
                 # Look up label
                 # JSON keys usually imply .pkl extension based on original dataset.
@@ -936,14 +826,23 @@ class Dataset_CustomFeatures(Dataset):
                     continue
 
                 # Feature Selection (Slicing) BEFORE NaN check
+                uses_capacity_last_column = getattr(self.args, 'model', None) in CAPACITY_LAST_COLUMN_MODELS
                 target_dim = -1
-                if hasattr(self.args, 'enc_in') and self.args.enc_in > 0:
-                     target_dim = self.args.enc_in
-                elif self.n_selected > 0:
-                     target_dim = self.n_selected
+                if self.n_selected > 0:
+                    target_dim = self.n_selected
+                elif hasattr(self.args, 'enc_in') and self.args.enc_in > 0:
+                    target_dim = self.args.enc_in
 
-                if target_dim > 0 and numeric_df.shape[1] >= target_dim:
-                     numeric_df = numeric_df.iloc[:, :target_dim]
+                if uses_capacity_last_column and self.n_selected > 0:
+                    # Preserve the last numeric column as discharge capacity while
+                    # taking the first n_selected covariate features.
+                    if numeric_df.shape[1] >= self.n_selected + 1:
+                        numeric_df = pd.concat(
+                            [numeric_df.iloc[:, :self.n_selected], numeric_df.iloc[:, -1:]],
+                            axis=1,
+                        )
+                elif target_dim > 0 and numeric_df.shape[1] >= target_dim:
+                    numeric_df = numeric_df.iloc[:, :target_dim]
 
                 # Check for NaN values and handle them (on sliced data)
                 if numeric_df.isnull().any().any():
@@ -1047,3 +946,55 @@ class Dataset_CustomFeatures(Dataset):
 
     def return_life_class_scaler(self):
         return None
+
+    def _resolve_label_dir(self) -> Path:
+        """Resolve a label directory with backwards-compatible fallbacks."""
+        explicit_label_dir = getattr(self.args, 'label_dir', None)
+        candidates = []
+
+        if explicit_label_dir:
+            candidates.append(Path(explicit_label_dir))
+
+        root_path = Path(self.root_path)
+        candidates.extend([
+            root_path / 'labels',
+            root_path / 'Life labels',
+            PROJECT_ROOT / 'data_provider' / 'labels',
+            PROJECT_ROOT / 'data' / 'labels',
+            PROJECT_ROOT / 'dataset' / 'Life labels',
+        ])
+
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate.parent
+            if candidate.is_dir():
+                return candidate
+
+        # Keep the historical default path as a final fallback even if missing.
+        return root_path / 'Life labels'
+
+    def _load_label_cache_for_prefix(self, prefix: str) -> Dict[str, Any]:
+        """Load the per-prefix label JSON with robust directory and filename fallbacks."""
+        candidate_names = [f'{prefix}_labels.json']
+        if prefix == 'MICH':
+            candidate_names.insert(0, 'total_MICH_labels.json')
+        elif prefix.startswith('Tongji'):
+            candidate_names.insert(0, 'Tongji_labels.json')
+
+        candidate_dirs = [self.label_dir]
+        if self.label_dir != PROJECT_ROOT / 'data_provider' / 'labels':
+            candidate_dirs.append(PROJECT_ROOT / 'data_provider' / 'labels')
+        if self.label_dir != PROJECT_ROOT / 'data' / 'labels':
+            candidate_dirs.append(PROJECT_ROOT / 'data' / 'labels')
+        if self.label_dir != Path(self.root_path) / 'Life labels':
+            candidate_dirs.append(Path(self.root_path) / 'Life labels')
+
+        for candidate_dir in candidate_dirs:
+            for candidate_name in candidate_names:
+                label_path = candidate_dir / candidate_name
+                if label_path.exists():
+                    with open(label_path, 'r', encoding='utf-8') as handle:
+                        return json.load(handle)
+
+        print(f"Warning: Label file not found for prefix {prefix} in {self.label_dir}")
+        return {}

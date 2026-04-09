@@ -1,0 +1,23 @@
+# environment 
+.claude/
+.spec-workflow/
+.kiro/
+.venv/
+.codex/
+
+# python
+__pycache__/
+checkpoints/
+*.pyc
+
+#datasets
+datasets/
+data/
+dataset/
+
+#results
+results/
+
+# logs
+swanlog/
+wandb/

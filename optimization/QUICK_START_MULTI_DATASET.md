@@ -7,10 +7,10 @@
 
 ```bash
 # 需要先应用补丁
-python apply_multi_dataset_patch.py
+python optimization/apply_multi_dataset_patch.py
 
 # 然后运行
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method pso \
     --model MLP \
     --datasets HUST CALB CALCE \
@@ -27,7 +27,7 @@ python hyperparameter_optimization.py \
 
 ```bash
 # 直接运行
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE MIT MATR SNL ISU_ILCC NA RWTH Stanford XJTU HNEI MICH MICH_EXP UL_PUR Tongji ZNion \
     --method pso \
     --model MLP \
@@ -45,7 +45,7 @@ python run_multi_dataset_optimization.py \
 
 ```bash
 # 方案C - 快速测试
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
     --model MLP \
@@ -121,7 +121,7 @@ hyperparam_search_results/
 
 ### 第1步：快速探索（方案C，少量迭代）
 ```bash
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
     --model MLP \
@@ -133,7 +133,7 @@ python run_multi_dataset_optimization.py \
 
 ### 第2步：深度优化（方案C，充分迭代）
 ```bash
-python run_multi_dataset_optimization.py \
+python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
     --model MLP \
@@ -146,10 +146,10 @@ python run_multi_dataset_optimization.py \
 ### 第3步（可选）：测试通用性（方案A）
 ```bash
 # 先应用补丁
-python apply_multi_dataset_patch.py
+python optimization/apply_multi_dataset_patch.py
 
 # 运行方案A
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method pso \
     --model MLP \
     --datasets HUST CALB CALCE \

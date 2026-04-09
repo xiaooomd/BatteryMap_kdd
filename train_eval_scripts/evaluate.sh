@@ -7,7 +7,7 @@ eval_cycle_max=100
 eval_dataset=CALB
 model=CPMLP
 
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch  --multi_gpu --num_processes $num_process --num_machines 1 --mixed_precision no --dynamo_backend no --main_process_port $master_port evaluate_model.py \
+CUDA_VISIBLE_DEVICES=0,1 accelerate launch  --multi_gpu --num_processes $num_process --num_machines 1 --mixed_precision no --dynamo_backend no --main_process_port $master_port scripts/evaluate_model.py \
   --args_path $args_path \
   --batch_size $batch_size \
   --eval_cycle_min $eval_cycle_min \

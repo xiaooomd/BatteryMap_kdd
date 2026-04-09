@@ -1,99 +1,59 @@
-# BatteryMap: Full-Stack Battery Feature Engineering & Life Prediction Platform
+# BatteryMap: Battery Feature Engineering and Life Prediction
 
-**BatteryMap** is a modular, scalable battery data analysis platform that deeply integrates a **Physical Feature Extraction Pipeline** with a **Deep Learning Life Prediction Engine**.
+BatteryMap is a modular platform for battery lifecycle analysis, combining physical feature engineering and deep learning based life prediction.
 
-## ✨ Key Features
+## Current Capabilities
 
-*   **Multi-Source Data Support**: Standardized ETL pipelines for major battery datasets (CALB, HUST, MIT, etc.).
-*   **Physics-Informed Feature Engineering**: Automated extraction of voltage, current, temperature, and differential features (IC/DV curves).
-*   **Advanced Feature Selection**: Hybrid strategy combining correlation analysis (Pearson/Spearman) and model-based importance (SHAP/RFE).
-*   **SOTA Prediction Models**: Integrated 18+ deep learning models including Autoformer, iTransformer, PatchTST, and DLinear.
-*   **Automated Optimization**: Built-in hyperparameter tuning using Particle Swarm Optimization (PSO).
-*   **Modular Architecture**: Decoupled design for data loading, feature processing, and model training.
+- Multi-dataset feature extraction (CALB, CALCE, HUST, MATR, SNL, Stanford, XJTU, ZN-coin, and more)
+- Physics-informed feature computation (capacity, energy, efficiency, IC/DV, statistical descriptors)
+- End-to-end feature engineering pipeline (cleaning, imputation, filter selection, wrapper selection)
+- Deep learning training and evaluation for battery life prediction
+- Hyperparameter optimization with Grid Search and PSO, including multi-dataset optimization scripts
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
-BatteryMap/
-├── features/               # [Feature Eng] Feature Extraction Scripts (ETL)
-│   ├── features_CALB.py    # Example: CALB dataset extraction
-│   └── ...
-├── modules/                # [Core] Core Business Logic
-│   ├── feature_selector/   # Feature Selectors (Filter/Wrapper)
-│   ├── data_processor/     # Data Cleaning & Loading
-│   ├── predictor/          # Deep Learning Prediction Module
-│   └── ...
-├── src/                    # [Utils] Low-level Utility Library
-│   ├── utils/
-│   │   ├── math_tools.py   # Math Utilities
-│   │   └── feature_tools.py # Physical Feature Extraction Tools
-│   └── ...
-├── pipelines/              # [Orchestration] Orchestration Scripts
-│   ├── run_all_and_report.sh    # Full Pipeline Entry
-│   ├── run_hybrid_robustness.sh # Hybrid Selection Pipeline
-│   └── ...
-├── models/                 # [Deep Learning] Prediction Model Library
-│   ├── Autoformer/
-│   ├── PatchTST/
-│   └── ...
-├── run_feature_selection.py # [Entry] Feature Engineering Entry Point
-├── run_main.py             # [Entry] Deep Learning Training Entry Point
-└── requirements.txt        # Project Dependencies
+BatteryMap_kdd/
+├─ run.py                          # Unified command entry
+├─ run_feature_extraction.py       # Feature extraction entry
+├─ run_feature_selection.py        # Feature engineering entry (PPCF-related code and descriptions are here)
+├─ run_main.py                     # Training and evaluation entry
+├─ features/                       # Dataset-specific extraction scripts and base extractor
+├─ modules/
+│  ├─ data_processor/              # Cleaning, imputation, loading
+│  ├─ feature_selector/            # Filter and wrapper selectors
+│  └─ predictor/                   # Trainer, evaluator, model factory
+├─ data_provider/                  # Data loading and split records
+├─ models/                         # Model implementations
+├─ scripts/                        # Optimization, evaluation, and batch scripts
+├─ configs/                        # Best hyperparameters and search spaces
+└─ docs/                           # Detailed documentation
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
-### 1. Environment Setup
+Run feature extraction:
+
 ```bash
-pip install -r requirements.txt
+python run_feature_extraction.py
 ```
 
-### 2. Feature Engineering
+Run feature engineering:
 
-**Phase 1: Feature Extraction**
-Convert raw battery data (`.pkl` ) into standardized feature CSV files.
-
-1.  Modify `processed_data_dir` in `features/features_*.py` to point to your raw data path.
-2.  Run the extraction script:
-    ```bash
-    python features/features_CALB.py
-    ```
-
-**Phase 2: Analysis & Selection**
-Run selection and analysis using the unified entry point:
 ```bash
-# Run default feature selection pipeline
-python run_feature_selection.py
+python run_feature_selection.py --dataset_id HUST
 ```
 
-### 3. Life Prediction (RUL)
+Run model training:
 
-Train and evaluate using deep learning models.
-
-**Data Preparation**:
-Place processed datasets into the `dataset/` directory.
-
-**Model Training**:
 ```bash
-# Example: Train on HUST dataset using Autoformer
 python run_main.py --model Autoformer --dataset HUST
 ```
 
-**Hyperparameter Optimization (PSO/Grid Search)**:
+Or use the unified entry:
+
 ```bash
-python hyperparameter_optimization.py --method pso --model MLP --dataset HUST
+python run.py extraction
+python run.py selection --dataset_id HUST
+python run.py predict --model Autoformer --dataset HUST
 ```
-
-## ⚙️ Core Modules
-
-### Feature Engineering Module
-*   **Direct Features**: Capacity, Energy, Coulombic Efficiency, Temperature, etc.
-*   **IC/DV Features**: Incremental Capacity (IC) and Differential Voltage (DV) curves based on `src.utils.feature_tools`.
-*   **Hybrid Selection Strategy**: Combines Pearson/Spearman correlation filtering with SHAP value importance ranking.
-
-### Deep Learning Module
-*   **Supported Models**: Transformer (Autoformer, iTransformer), MLP (DLinear), RNN (LSTM, GRU), CNN, and 18+ SOTA models.
-*   **Capabilities**: Supports full supervised training, Fine-tuning, and Domain Adaptation.
-
----
-*Powered by BatteryMap Team*

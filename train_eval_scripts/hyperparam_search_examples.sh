@@ -20,7 +20,7 @@ echo "------------------------------------------"
 # Note: Grid search tries all parameter combinations, which can take a long time if the search space is large
 # Suggest testing with a small search space first
 
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method grid \
     --model MLP \
     --dataset HUST \
@@ -39,7 +39,7 @@ echo ""
 echo "Example 2: Particle Swarm Optimization - CPMLP model"
 echo "------------------------------------------"
 
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method pso \
     --model CPMLP \
     --dataset HUST \
@@ -62,7 +62,7 @@ echo ""
 echo "Example 3: PSO optimization - Transformer (Feature mode)"
 echo "------------------------------------------"
 
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method pso \
     --model Transformer \
     --dataset HUST \
@@ -82,7 +82,7 @@ echo ""
 echo "Example 4: Grid Search - BiLSTM (Early prediction)"
 echo "------------------------------------------"
 
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method grid \
     --model BiLSTM \
     --dataset HUST \
@@ -101,7 +101,7 @@ echo ""
 echo "Example 5: PSO Fast Test - DLinear model"
 echo "------------------------------------------"
 
-python hyperparameter_optimization.py \
+python run.py hyperopt \
     --method pso \
     --model DLinear \
     --dataset HUST \
@@ -119,3 +119,4 @@ echo "=========================================="
 echo "All examples executed successfully!"
 echo "Results saved in ./hyperparam_search_results/"
 echo "=========================================="
+
