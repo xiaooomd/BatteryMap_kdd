@@ -1,15 +1,15 @@
-# 多数据集超参数优化快速使用指南
+# Multi-Dataset Hyperparameter Optimization Quick Start Guide
 
-## 🎯 两种方案快速选择
+## Quick Selection Between Two Schemes
 
-### 方案A: 多数据集聚合优化（通用参数）
-找**一组**超参数，在所有数据集上平均性能最优
+### Scheme A: Multi-Dataset Aggregated Optimization (Universal Parameters)
+Find **one** set of hyperparameters that optimizes average performance across all datasets
 
 ```bash
-# 需要先应用补丁
+# Requires applying patch first
 python optimization/apply_multi_dataset_patch.py
 
-# 然后运行
+# Then run
 python run.py hyperopt \
     --method pso \
     --model MLP \
@@ -18,15 +18,15 @@ python run.py hyperopt \
     --gpu 0
 ```
 
-**输出**: 1组参数，适用于所有数据集
+**Output**: 1 set of parameters, applicable to all datasets
 
 ---
 
-### 方案C: 并行独立优化（定制参数）⭐ 推荐
-为每个数据集**分别**找最优参数
+### Scheme C: Parallel Independent Optimization (Customized Parameters) - Recommended
+Find optimal parameters **separately** for each dataset
 
 ```bash
-# 直接运行
+# Run directly
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE MIT MATR SNL ISU_ILCC NA RWTH Stanford XJTU HNEI MICH MICH_EXP UL_PUR Tongji ZNion \
     --method pso \
@@ -37,14 +37,14 @@ python run.py multi-dataset-opt \
     --max_workers_per_gpu 4
 ```
 
-**输出**: 17组参数，每个数据集独立配置
+**Output**: 17 sets of parameters, each dataset independently configured
 
 ---
 
-## ⚡ 快速测试（3个数据集）
+## Quick Test (3 Datasets)
 
 ```bash
-# 方案C - 快速测试
+# Scheme C - Quick Test
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
@@ -56,70 +56,70 @@ python run.py multi-dataset-opt \
     --max_workers_per_gpu 2
 ```
 
-预计耗时：约1-2小时（取决于GPU性能）
+Estimated time: ~1-2 hours (depends on GPU performance)
 
 ---
 
-## 📊 查看结果
+## Viewing Results
 
-### 方案A结果
+### Scheme A Results
 ```
 hyperparam_search_results/
 └── pso_MLP_HUST_CALB_CALCE_20260119_220045/
-    ├── all_trials.csv           # 所有试验记录
-    ├── best_params.json         # 最佳通用参数
-    └── search_config.json       # 搜索配置
+    ├── all_trials.csv           # All trial records
+    ├── best_params.json         # Best universal parameters
+    └── search_config.json       # Search configuration
 ```
 
-### 方案C结果
+### Scheme C Results
 ```
 hyperparam_search_results/
 └── multi_dataset_optimization_20260119_220045/
-    ├── summary.json             # 汇总结果
-    ├── summary.csv              # 汇总表格
-    ├── config.json              # 运行配置
+    ├── summary.json             # Summary results
+    ├── summary.csv              # Summary table
+    ├── config.json              # Runtime configuration
     ├── HUST/
     │   ├── all_trials.csv
     │   └── best_params.json
     ├── CALB/
     │   ├── all_trials.csv
     │   └── best_params.json
-    └── ... (其他数据集)
+    └── ... (other datasets)
 ```
 
 ---
 
-## 🔧 常见参数调整
+## Common Parameter Adjustments
 
-### 快速测试（降低计算量）
+### Quick Test (Reduce Computation)
 ```bash
---n_particles 10        # 从20降到10
---n_iterations 20       # 从50降到20
---train_epochs 5        # 从10降到5
+--n_particles 10        # Reduce from 20 to 10
+--n_iterations 20       # Reduce from 50 to 20
+--train_epochs 5        # Reduce from 10 to 5
 ```
 
-### 深度优化（提高精度）
+### Deep Optimization (Increase Precision)
 ```bash
---n_particles 30        # 从20增到30
---n_iterations 100      # 从50增到100
---train_epochs 20       # 从10增到20
+--n_particles 30        # Increase from 20 to 30
+--n_iterations 100      # Increase from 50 to 100
+--train_epochs 20       # Increase from 10 to 20
 ```
 
-### GPU配置
+### GPU Configuration
 ```bash
-# 6个GPU，每个最多4任务 = 24并行
+# 6 GPUs, up to 4 tasks each = 24 parallel
 --gpus 0 1 2 3 4 5
 --max_workers_per_gpu 4
 
-# GPU内存不足时，减少并行任务
+# When GPU memory is insufficient, reduce parallel tasks
 --max_workers_per_gpu 2
 ```
 
 ---
 
-## 💡 推荐工作流
+## Recommended Workflow
 
-### 第1步：快速探索（方案C，少量迭代）
+### Step 1: Quick Exploration (Scheme C, few iterations)
 ```bash
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
@@ -131,7 +131,7 @@ python run.py multi-dataset-opt \
     --gpus 0 1 2
 ```
 
-### 第2步：深度优化（方案C，充分迭代）
+### Step 2: Deep Optimization (Scheme C, full iteration)
 ```bash
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
@@ -143,12 +143,12 @@ python run.py multi-dataset-opt \
     --gpus 0 1 2
 ```
 
-### 第3步（可选）：测试通用性（方案A）
+### Step 3 (Optional): Test Universality (Scheme A)
 ```bash
-# 先应用补丁
+# Apply patch first
 python optimization/apply_multi_dataset_patch.py
 
-# 运行方案A
+# Run Scheme A
 python run.py hyperopt \
     --method pso \
     --model MLP \
@@ -162,64 +162,64 @@ python run.py hyperopt \
 
 ---
 
-## 🚨 故障排查
+## Troubleshooting
 
-### 问题1: 某个数据集总是失败
-- 方案C会自动跳过失败的数据集，不影响其他
-- 查看该数据集的独立日志
-- 可能原因：数据缺失、样本太少、GPU内存不足
+### Problem 1: A dataset always fails
+- Scheme C automatically skips failed datasets, not affecting others
+- Check the independent log for that dataset
+- Possible causes: missing data, too few samples, insufficient GPU memory
 
-### 问题2: GPU内存不足
+### Problem 2: Insufficient GPU memory
 ```bash
---max_workers_per_gpu 2  # 减少并行任务
---batch_size 16          # 减小batch size
+--max_workers_per_gpu 2  # Reduce parallel tasks
+--batch_size 16          # Reduce batch size
 ```
 
-### 问题3: 进程卡死
-- 方案C中，单个数据集卡死不影响其他
-- 可以手动kill该进程，其他数据集继续运行
+### Problem 3: Process hangs
+- In Scheme C, a single dataset hanging does not affect others
+- Can manually kill that process, other datasets continue running
 
 ---
 
-## 📚 详细文档
+## Detailed Documentation
 
-- **完整使用文档**: [docs/MULTI_DATASET_OPTIMIZATION.md](docs/MULTI_DATASET_OPTIMIZATION.md)
-- **单数据集优化**: [docs/HYPERPARAMETER_OPTIMIZATION.md](docs/HYPERPARAMETER_OPTIMIZATION.md)
-- **代码细节**: 查看各脚本的docstring
-
----
-
-## ⏱️ 耗时估算
-
-### 方案C（17个数据集，6个GPU）
-```
-单数据集耗时 = 20粒子 × 50迭代 × 5分钟/次 = 83小时
-并行加速 = 6GPU × 4任务/GPU = 24并行
-实际耗时 ≈ 83小时（因为数据集不会完全同时结束）
-
-建议：先用少量迭代快速测试（耗时约10小时）
-```
-
-### 方案A（3个数据集）
-```
-单次试验 = 3个数据集 × 5分钟 = 15分钟
-总耗时 = 20粒子 × 50迭代 × 15分钟 = 250小时
-
-建议：使用网格搜索 + 小搜索空间
-```
+- **Complete Usage Documentation**: [docs/MULTI_DATASET_OPTIMIZATION.md](docs/MULTI_DATASET_OPTIMIZATION.md)
+- **Single-Dataset Optimization**: [docs/HYPERPARAMETER_OPTIMIZATION.md](docs/HYPERPARAMETER_OPTIMIZATION.md)
+- **Code Details**: See docstrings in various scripts
 
 ---
 
-## 🎓 核心概念
+## Time Estimation
 
-- **方案A**: 一组参数 → 所有数据集通用 → 简化部署
-- **方案C**: N组参数 → 每个数据集定制 → 最佳性能
-- **GPU配置**: 你有6个GPU，每个可跑4个任务 → 最多24并行
-- **聚合方式**: mean(平均), min(最差), weighted_mean(加权)
-- **失败容错**: 某个数据集失败不影响其他数据集
+### Scheme C (17 datasets, 6 GPUs)
+```
+Single dataset time = 20 particles × 50 iterations × 5 minutes/run = 83 hours
+Parallel speedup = 6 GPUs × 4 tasks/GPU = 24 parallel
+Actual time ≈ 83 hours (datasets don't finish exactly at the same time)
+
+Suggestion: Test with few iterations first (takes ~10 hours)
+```
+
+### Scheme A (3 datasets)
+```
+Single trial = 3 datasets × 5 minutes = 15 minutes
+Total time = 20 particles × 50 iterations × 15 minutes = 250 hours
+
+Suggestion: Use grid search + small search space
+```
 
 ---
 
-**开始优化吧！** 🚀
+## Core Concepts
 
-有问题请参考: [docs/MULTI_DATASET_OPTIMIZATION.md](docs/MULTI_DATASET_OPTIMIZATION.md)
+- **Scheme A**: One parameter set → Universal for all datasets → Simplified deployment
+- **Scheme C**: N parameter sets → Customized per dataset → Best performance
+- **GPU Configuration**: You have 6 GPUs, each can run 4 tasks → Up to 24 parallel
+- **Aggregation Methods**: mean (average), min (worst), weighted_mean (weighted)
+- **Failure Tolerance**: One dataset failing does not affect other datasets
+
+---
+
+**Start optimizing!**
+
+For questions, see: [docs/MULTI_DATASET_OPTIMIZATION.md](docs/MULTI_DATASET_OPTIMIZATION.md)

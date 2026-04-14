@@ -86,7 +86,7 @@ def resolve_target_datasets(dataset_id_arg: str | None) -> List[str]:
 
     invalid = [name for name in requested if name not in SUPPORTED_DATASETS]
     if invalid:
-        raise ValueError("当前数据集并未处理，请选择白名单中的电池")
+        raise ValueError("Dataset not currently handled, please select from the whitelist")
 
     return list(dict.fromkeys(requested))
 

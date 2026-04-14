@@ -9,13 +9,13 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict
 
-# 解决matplotlib中文显示问题
+# Fix matplotlib Chinese character display issues
 # plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 
 def setup_logger():
     """
-    配置全局 Logger，支持输出到控制台和文件。
+    Configure the global Logger, supporting output to console and file.
     """
     log_dir = "logs"
     if not os.path.exists(log_dir):
@@ -46,21 +46,21 @@ def setup_logger():
 
 def plot_feature_importance(importance_df: pd.DataFrame, dataset_id: str, save_dir: str, top_n: int = 20, selector_name: str = 'importance', filename_prefix: str = None):
     """
-    生成并保存数据集的特征重要性排序图。
+    Generate and save feature importance ranking plot for a dataset.
     Args:
-        filename_prefix: 用于文件名的前缀（若为None，默认为 selector_name）
-                         若指定（如 SNL_LFP），则文件名为 {filename_prefix}_shap_feature_importance.png
+        filename_prefix: Prefix for the file name (if None, defaults to selector_name).
+                         If specified (e.g. SNL_LFP), the file name is {filename_prefix}_shap_feature_importance.png
     """
-    # 确定文件名
+    # Determine file name
     prefix = filename_prefix if filename_prefix else selector_name
-    # 保持旧逻辑兼容：如果没传 filename_prefix，原来的逻辑是 {selector_name}_feature_importance.png
-    # 新逻辑下，如果不传 filename_prefix，prefix=selector_name，结果一致。
-    # 但为了满足需求 "SNL_LFP_shap_feature_importance.png"，调用时需传入 filename_prefix="SNL_LFP" 且保持 selector_name="shap" 以防混淆。
-    # 修改策略：文件名固定模式 {filename_prefix}_{selector_name}_feature_importance.png ?
-    # 或者简单点，调用者全权负责 prefix。
-    # 根据 run.py 的调用：filename_prefix=file_prefix (e.g. SNL_LFP)
+    # Keep old logic compatible: if filename_prefix is not passed, original logic is {selector_name}_feature_importance.png
+    # Under new logic, if filename_prefix is not passed, prefix=selector_name, result is the same.
+    # To satisfy the requirement "SNL_LFP_shap_feature_importance.png", call with filename_prefix="SNL_LFP" and keep selector_name="shap".
+    # Modification strategy: fixed file name pattern {filename_prefix}_{selector_name}_feature_importance.png?
+    # Or simpler, caller has full control over prefix.
+    # According to run.py call: filename_prefix=file_prefix (e.g. SNL_LFP)
     # selector_name='shap'
-    # 期望文件名: SNL_LFP_shap_feature_importance.png
+    # Expected file name: SNL_LFP_shap_feature_importance.png
 
     if filename_prefix:
         save_path = os.path.join(save_dir, f"{filename_prefix}_{selector_name}_feature_importance.png")
@@ -70,7 +70,7 @@ def plot_feature_importance(importance_df: pd.DataFrame, dataset_id: str, save_d
     logger = logging.getLogger("FeatureSelection")
 
     plt.figure(figsize=(12, max(6, top_n // 2)))
-    # 使用 Seaborn 的 barplot
+    # Use Seaborn barplot
     sns.set_style("whitegrid")
 
     top_features = importance_df.sort_values(by='importance', ascending=False).head(top_n)
@@ -89,21 +89,21 @@ def plot_feature_importance(importance_df: pd.DataFrame, dataset_id: str, save_d
 
     try:
         plt.savefig(save_path, dpi=300)
-        logger.info(f"特征重要性图已保存: {save_path}")
+        logger.info(f"Feature importance plot saved: {save_path}")
     except Exception as e:
-        logger.error(f"保存图表失败: {save_path}. 错误: {e}")
+        logger.error(f"Failed to save plot: {save_path}. Error: {e}")
     plt.close()
 
 def plot_correlation_heatmap(df: pd.DataFrame, save_dir: str, title_suffix: str = ""):
     """
-    绘制并保存特征相关性热力图。
+    Draw and save feature correlation heatmap.
     """
     logger = logging.getLogger("FeatureSelection")
     save_path = os.path.join(save_dir, f"correlation_heatmap_{title_suffix}.png")
 
     n_cols = df.shape[1]
     if n_cols > 50:
-        logger.warning(f"特征数量过多 ({n_cols})，热力图可能难以阅读。")
+        logger.warning(f"Too many features ({n_cols}), heatmap may be difficult to read.")
         plt.figure(figsize=(20, 18))
     else:
         plt.figure(figsize=(12, 10))
@@ -128,14 +128,14 @@ def plot_correlation_heatmap(df: pd.DataFrame, save_dir: str, title_suffix: str 
 
     try:
         plt.savefig(save_path, dpi=300)
-        logger.info(f"相关性热力图已保存: {save_path}")
+        logger.info(f"Correlation heatmap saved: {save_path}")
     except Exception as e:
-        logger.error(f"保存热力图失败: {save_path}. 错误: {e}")
+        logger.error(f"Failed to save heatmap: {save_path}. Error: {e}")
     plt.close()
 
 def plot_feature_frequency(feature_counts: pd.Series, save_dir: str, top_n: int = 30):
     """
-    绘制特征在所有数据集中出现的频率。
+    Plot the frequency of features appearing across all datasets.
     """
     logger = logging.getLogger("FeatureSelection")
     save_path = os.path.join(save_dir, "robust_feature_frequency.png")
@@ -157,14 +157,14 @@ def plot_feature_frequency(feature_counts: pd.Series, save_dir: str, top_n: int 
 
     try:
         plt.savefig(save_path, dpi=300)
-        logger.info(f"特征频率分布图已保存: {save_path}")
+        logger.info(f"Feature frequency distribution plot saved: {save_path}")
     except Exception as e:
-        logger.error(f"保存特征频率图失败: {e}")
+        logger.error(f"Failed to save feature frequency plot: {e}")
     plt.close()
 
 def plot_selection_heatmap(selection_matrix: pd.DataFrame, save_dir: str):
     """
-    绘制特征选择的二值热力图。
+    Draw binary heatmap of feature selection.
     """
     logger = logging.getLogger("FeatureSelection")
     save_path = os.path.join(save_dir, "feature_selection_matrix.png")
@@ -177,7 +177,7 @@ def plot_selection_heatmap(selection_matrix: pd.DataFrame, save_dir: str):
     plot_data = selection_matrix.loc[sorted_idx]
 
     if plot_data.shape[0] > 50:
-        logger.info(f"特征总数 ({plot_data.shape[0]}) 较多，热力图仅展示 Top 50 鲁棒特征。")
+        logger.info(f"Total features ({plot_data.shape[0]}) is large, heatmap shows only Top 50 robust features.")
         plot_data = plot_data.head(50)
 
     plt.figure(figsize=(12, max(8, plot_data.shape[0] * 0.3)))
@@ -201,18 +201,18 @@ def plot_selection_heatmap(selection_matrix: pd.DataFrame, save_dir: str):
 
     try:
         plt.savefig(save_path, dpi=300)
-        logger.info(f"特征选择矩阵热力图已保存: {save_path}")
+        logger.info(f"Feature selection matrix heatmap saved: {save_path}")
     except Exception as e:
-        logger.error(f"保存选择矩阵图失败: {e}")
+        logger.error(f"Failed to save selection matrix plot: {e}")
     plt.close()
 
 
 class MarkdownReporter:
     """
-    负责生成 Markdown 格式的特征工程报告。
+    Responsible for generating Markdown-format feature engineering reports.
     """
     def __init__(self, output_dir: str):
-        # 直接使用传入的目录，不再强制追加子目录
+        # Use the provided directory directly, no forced subdirectory appending
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
@@ -237,7 +237,7 @@ class MarkdownReporter:
                 else:
                     for reason, cols in cleaned_info.items():
                         f.write(f"### {reason} ({len(cols)})\n")
-                        # 使用无序列表
+                        # Use unordered list
                         for col in cols:
                             f.write(f"- {col}\n")
                 f.write("\n")
@@ -274,5 +274,4 @@ class MarkdownReporter:
 
             logging.getLogger("FeatureSelection").info(f"Markdown report generated: {file_path}")
         except Exception as e:
-            logging.getLogger("FeatureSelection").error(f"生成 Markdown 报告失败: {e}")
-
+            logging.getLogger("FeatureSelection").error(f"Failed to generate Markdown report: {e}")

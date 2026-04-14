@@ -12,7 +12,7 @@ datasets=(
     "CALCE" "HNEI" "Tongji" "Stanford" "ISU_ILCC" "XJTU"
 )
 
-# MLP训练参数
+# MLP training parameters
 model_name=MLP
 train_epochs=100
 early_cycle_threshold=100

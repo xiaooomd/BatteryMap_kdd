@@ -4,14 +4,14 @@ from typing import Dict, List
 
 class FeatureGrouper:
     """
-    负责将特征归类到物理组别中。
-    遵循物理意义优先的原则。
+    Responsible for grouping features into physical categories.
+    Follows the principle of physical meaning priority.
     """
     def __init__(self):
         self.logger = logging.getLogger("FeatureSelection.FeatureGrouper")
 
-        # 定义确定的分组列表 (Code Rules 1.3)
-        # 注意：不区分大小写，后续比较时统一转小写
+        # Define deterministic grouping lists (Code Rules 1.3)
+        # Note: Case-insensitive, convert to lowercase during comparison
         self.exact_rules = {
             'Energy': {
                 'discharge_capacity', 'charge_capacity', 'discharge_energy',
@@ -51,7 +51,7 @@ class FeatureGrouper:
             }
         }
 
-        # 模糊匹配规则 (Fallback)
+        # Fuzzy matching rules (Fallback)
         self.fuzzy_rules = {
             'Energy': ['capacity', 'energy'],
             'Kinetics': ['resistance', 'tau', 'time', 'rate', 'current_tau'],
@@ -70,15 +70,15 @@ class FeatureGrouper:
 
     def group_features(self, features: List[str]) -> Dict[str, List[str]]:
         """
-        根据特征名称进行分组。
-        逻辑：
-        1. 排除 Cycle_Number
-        2. 精确匹配
-        3. 模糊匹配 (按优先级)
+        Group features by feature names.
+        Logic:
+        1. Exclude Cycle_Number
+        2. Exact match
+        3. Fuzzy match (by priority)
         """
-        self.logger.info("开始特征分组...")
+        self.logger.info("Starting feature grouping...")
 
-        # 初始化分组
+        # Initialize groups
         self.groups = {
             'Energy': [],
             'Kinetics': [],
@@ -88,20 +88,20 @@ class FeatureGrouper:
             'Metadata': []
         }
 
-        # 记录未分类特征
+        # Track ungrouped features
         ungrouped = []
 
         for f in features:
             f_lower = f.lower()
             f_normalized = self._normalize_feature_name(f)
 
-            # 1. 排除 Cycle_Number
+            # 1. Exclude Cycle_Number
             if f_normalized == 'cycle_number':
                 continue
 
             assigned = False
 
-            # 2. 精确匹配
+            # 2. Exact match
             for group_name, exact_set in self.exact_rules.items():
                 if f_normalized in exact_set:
                     self.groups[group_name].append(f)
@@ -111,8 +111,8 @@ class FeatureGrouper:
             if assigned:
                 continue
 
-            # 3. 模糊匹配 (Fallback)
-            # 优先级顺序：Thermodynamics -> Energy -> Kinetics -> Curve -> Geometric -> Metadata
+            # 3. Fuzzy match (Fallback)
+            # Priority order: Thermodynamics -> Energy -> Kinetics -> Curve -> Geometric -> Metadata
 
             # Thermodynamics
             if any(k in f_normalized for k in self.fuzzy_rules['Thermodynamics']):
@@ -139,14 +139,14 @@ class FeatureGrouper:
                 self.groups['Geometric'].append(f)
                 assigned = True
 
-            # 兜底：如果没有匹配上，先暂存到 Curve (形状特征) 或者 Geometric?
-            # 根据过往经验，未匹配的大多是形状参数
+            # Fallback: if no match, tentatively assign to Curve (shape features) or Geometric?
+            # Based on past experience, unmatched features are mostly shape parameters
             elif not assigned:
-                self.logger.warning(f"特征 '{f}' 未匹配任何规则，默认归类为 Geometric")
+                self.logger.warning(f"Feature '{f}' did not match any rule, defaulting to Geometric")
                 self.groups['Geometric'].append(f)
 
-        # 移除空组
+        # Remove empty groups
         self.groups = {k: v for k, v in self.groups.items() if v}
 
-        self.logger.info(f"特征分组完成: { {k: len(v) for k, v in self.groups.items()} }")
+        self.logger.info(f"Feature grouping completed: { {k: len(v) for k, v in self.groups.items()} }")
         return self.groups

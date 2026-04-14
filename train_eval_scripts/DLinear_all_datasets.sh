@@ -12,7 +12,7 @@ datasets=(
     "CALCE" "HNEI" "Tongji" "Stanford" "ISU_ILCC" "XJTU"
 )
 
-# DLinear训练参数
+# DLinear training parameters
 model_name=DLinear
 train_epochs=100
 early_cycle_threshold=100
