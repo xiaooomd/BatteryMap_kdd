@@ -31,10 +31,10 @@ def set_ax_linewidth(ax, bw=1.5):
 
 def set_ax_font_size(ax, fontsize=10):
     ax.tick_params(axis='y',
-                   labelsize=fontsize  # y轴字体大小设置
+                   labelsize=fontsize  # y-axis font size setting
                    )
     ax.tick_params(axis='x',
-                   labelsize=fontsize  # x轴字体大小设置
+                   labelsize=fontsize  # x-axis font size setting
                    )
 
 

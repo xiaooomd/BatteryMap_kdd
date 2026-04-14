@@ -23,10 +23,10 @@ def set_ax_linewidth(ax, bw=1.5):
 
 def set_ax_font_size(ax, fontsize=10):
     ax.tick_params(axis='y',
-                 labelsize=fontsize # y轴字体大小设置
-                  ) 
+                 labelsize=fontsize  # y-axis font size setting
+                  )
     ax.tick_params(axis='x',
-                 labelsize=fontsize # x轴字体大小设置
+                 labelsize=fontsize  # x-axis font size setting
                   ) 
     
 def resample_charge_discharge_curves(voltages, currents, capacity_in_battery):
@@ -138,6 +138,6 @@ ax2.set_ylabel('Voltage (V)')
 ax1.set_xlabel('Capacity (Ah)')
 ax1.set_ylabel('Voltage (V)')
 fig.tight_layout()
-plt.subplots_adjust(wspace=0, hspace=0.3)  # 调整子图间距
+plt.subplots_adjust(wspace=0, hspace=0.3)  # Adjust subplot spacing
 plt.savefig('./figures/111.png')
 # plt.show()

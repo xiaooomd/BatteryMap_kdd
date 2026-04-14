@@ -12,7 +12,7 @@ datasets=(
     "CALCE" "HNEI" "Tongji" "Stanford" "ISU_ILCC" "XJTU"
 )
 
-# MICN训练参数
+# MICN training parameters
 model_name=MICN
 train_epochs=100
 early_cycle_threshold=100

@@ -21,3 +21,6 @@ results/
 # logs
 swanlog/
 wandb/
+
+# prompts
+CLAUDE.md

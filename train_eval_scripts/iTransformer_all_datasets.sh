@@ -12,7 +12,7 @@ datasets=(
     "CALCE" "HNEI" "Tongji" "Stanford" "ISU_ILCC" "XJTU"
 )
 
-# iTransformer训练参数
+# iTransformer training parameters
 model_name=iTransformer
 train_epochs=100
 early_cycle_threshold=100

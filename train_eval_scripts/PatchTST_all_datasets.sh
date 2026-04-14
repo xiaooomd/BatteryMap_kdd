@@ -12,7 +12,7 @@ datasets=(
     "CALCE" "HNEI" "Tongji" "Stanford" "ISU_ILCC" "XJTU"
 )
 
-# PatchTST训练参数
+# PatchTST training parameters
 model_name=PatchTST
 train_epochs=100
 early_cycle_threshold=100

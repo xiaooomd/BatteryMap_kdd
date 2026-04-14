@@ -1,33 +1,33 @@
-# Optimization 文件夹
+# Optimization Folder
 
-此文件夹包含超参数优化相关的辅助文件和文档。
+This folder contains auxiliary files and documentation related to hyperparameter optimization.
 
-## 📁 文件说明
+## File Descriptions
 
-### 辅助工具
-- **`apply_multi_dataset_patch.py`**: 方案A补丁工具
-  - 为 `scripts/hyperparameter_optimization.py` 添加多数据集聚合支持
-  - 自动备份原文件
-  - 使用方法: `python optimization/apply_multi_dataset_patch.py`
+### Auxiliary Tools
+- **`apply_multi_dataset_patch.py`**: Scheme A patch tool
+  - Adds multi-dataset aggregation support to `scripts/hyperparameter_optimization.py`
+  - Automatically backs up original files
+  - Usage: `python optimization/apply_multi_dataset_patch.py`
 
-### 文档
-- **`QUICK_START_MULTI_DATASET.md`**: 快速使用指南
-  - 两种方案的快速选择和示例命令
-  - 常见参数调整和故障排查
-  
-- **`MULTI_DATASET_OPTIMIZATION_SUMMARY.md`**: 完成总结
-  - 功能概览和关键要点
-  - 推荐工作流
-  - 文档导航
+### Documentation
+- **`QUICK_START_MULTI_DATASET.md`**: Quick start guide
+  - Quick selection between two schemes and example commands
+  - Common parameter adjustments and troubleshooting
 
-## 🚀 主要运行入口
+- **`MULTI_DATASET_OPTIMIZATION_SUMMARY.md`**: Completion summary
+  - Feature overview and key takeaways
+  - Recommended workflow
+  - Documentation navigation
 
-### 单数据集或多数据集聚合（方案A）
+## Main Entry Points
+
+### Single-dataset or Multi-dataset Aggregation (Scheme A)
 ```bash
 python run.py hyperopt --method pso --model MLP --dataset HUST
 ```
 
-### 多数据集并行独立优化（方案C）⭐ 推荐
+### Multi-dataset Parallel Independent Optimization (Scheme C) - Recommended
 ```bash
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
@@ -35,41 +35,41 @@ python run.py multi-dataset-opt \
     --gpus 0 1 2
 ```
 
-### 交互式启动
+### Interactive Launch
 ```bash
 python run.py hyperopt-batch
 ```
 
-## 📚 完整文档
+## Full Documentation
 
-详细文档在 `docs/` 文件夹：
-- `docs/HYPERPARAMETER_OPTIMIZATION.md` - 单数据集优化详细文档
-- `docs/MULTI_DATASET_OPTIMIZATION.md` - 多数据集优化完整指南
+Detailed documentation is in the `docs/` folder:
+- `docs/HYPERPARAMETER_OPTIMIZATION.md` - Single-dataset optimization detailed documentation
+- `docs/MULTI_DATASET_OPTIMIZATION.md` - Multi-dataset optimization complete guide
 
-## 📦 相关文件位置
+## Related File Locations
 
-- **核心算法**: `utils/optimization.py`
+- **Core Algorithm**: `utils/optimization.py`
   - GridSearchOptimizer
   - PSOOptimizer
   - RandomSearchOptimizer
 
-- **搜索空间配置**: `configs/hyperparam_search_config.py`
-  - 预定义的搜索空间
-  - 所有模型的参数范围
+- **Search Space Configuration**: `configs/hyperparam_search_config.py`
+  - Predefined search spaces
+  - Parameter ranges for all models
 
-- **示例脚本**: `train_eval_scripts/hyperparam_search_examples.sh`
-  - Bash脚本示例
+- **Example Scripts**: `train_eval_scripts/hyperparam_search_examples.sh`
+  - Bash script examples
 
-## 💡 快速开始
+## Quick Start
 
-1. **测试单数据集优化**
+1. **Test single-dataset optimization**
    ```bash
    python run.py hyperopt \
        --method pso --model MLP --dataset HUST \
        --n_particles 10 --n_iterations 20
    ```
 
-2. **测试多数据集并行优化** ⭐
+2. **Test multi-dataset parallel optimization** - Recommended
    ```bash
    python run.py multi-dataset-opt \
        --datasets HUST CALB CALCE \
@@ -78,13 +78,13 @@ python run.py hyperopt-batch
        --gpus 0 1 2
    ```
 
-3. **查看快速指南**
+3. **View quick guide**
    ```bash
    cat optimization/QUICK_START_MULTI_DATASET.md
    ```
 
-## 🔗 相关链接
+## Related Links
 
-- [快速使用指南](QUICK_START_MULTI_DATASET.md)
-- [功能总结](MULTI_DATASET_OPTIMIZATION_SUMMARY.md)
-- [完整文档](../docs/MULTI_DATASET_OPTIMIZATION.md)
+- [Quick Start Guide](QUICK_START_MULTI_DATASET.md)
+- [Feature Summary](MULTI_DATASET_OPTIMIZATION_SUMMARY.md)
+- [Full Documentation](../docs/MULTI_DATASET_OPTIMIZATION.md)

@@ -1,34 +1,34 @@
-# 多数据集超参数优化完成总结
+# Multi-Dataset Hyperparameter Optimization Completion Summary
 
-## ✅ 已完成功能
+## Completed Features
 
-### 方案A：多数据集聚合优化（通用参数）
-- ✅ 创建补丁工具 `apply_multi_dataset_patch.py`
-- ✅ 提供完整的代码修改指南
-- ✅ 支持多种聚合策略（平均、加权平均、最差性能、中位数）
-- ✅ 自动失败容错机制
+### Scheme A: Multi-Dataset Aggregated Optimization (Universal Parameters)
+- Created patch utility `apply_multi_dataset_patch.py`
+- Provided complete code modification guide
+- Support for multiple aggregation strategies (mean, weighted mean, worst performance, median)
+- Automatic failure tolerance mechanism
 
-### 方案C：并行独立优化（定制参数）⭐ 推荐
-- ✅ 创建独立脚本 `scripts/run_multi_dataset_optimization.py`
-- ✅ 支持6个GPU × 每GPU 4任务 = 最多24并行
-- ✅ 自动GPU分配和任务调度
-- ✅ 失败任务跳过，不影响其他数据集
-- ✅ 生成统一汇总报告（summary.json + summary.csv）
-- ✅ 实时进度显示和耗时统计
+### Scheme C: Parallel Independent Optimization (Customized Parameters) - Recommended
+- Created standalone script `scripts/run_multi_dataset_optimization.py`
+- Support for 6 GPUs × 4 tasks per GPU = up to 24 parallel
+- Automatic GPU allocation and task scheduling
+- Failed tasks skip without affecting other datasets
+- Unified summary report generation (summary.json + summary.csv)
+- Real-time progress display and elapsed time statistics
 
-### 文档和工具
-- ✅ 完整使用文档：`docs/MULTI_DATASET_OPTIMIZATION.md` (5000+字)
-- ✅ 快速使用指南：`QUICK_START_MULTI_DATASET.md`
-- ✅ 自动补丁工具：`apply_multi_dataset_patch.py`
-- ✅ 更新项目日志：`logs.md`
+### Documentation and Tools
+- Complete usage documentation: `docs/MULTI_DATASET_OPTIMIZATION.md` (5000+ words)
+- Quick start guide: `QUICK_START_MULTI_DATASET.md`
+- Automatic patch tool: `apply_multi_dataset_patch.py`
+- Updated project log: `logs.md`
 
 ---
 
-## 🚀 快速开始
+## Quick Start
 
-### 推荐：方案C（并行独立优化）
+### Recommended: Scheme C (Parallel Independent Optimization)
 
-**1. 快速测试（3个数据集）**
+**1. Quick Test (3 datasets)**
 ```bash
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
@@ -41,7 +41,7 @@ python run.py multi-dataset-opt \
     --max_workers_per_gpu 2
 ```
 
-**2. 完整优化（17个数据集）**
+**2. Full Optimization (17 datasets)**
 ```bash
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE MIT MATR SNL ISU_ILCC NA RWTH Stanford XJTU HNEI MICH MICH_EXP UL_PUR Tongji ZNion \
@@ -54,14 +54,14 @@ python run.py multi-dataset-opt \
     --max_workers_per_gpu 4
 ```
 
-### 可选：方案A（多数据集聚合）
+### Optional: Scheme A (Multi-Dataset Aggregation)
 
-**1. 应用补丁**
+**1. Apply Patch**
 ```bash
 python apply_multi_dataset_patch.py
 ```
 
-**2. 运行优化**
+**2. Run Optimization**
 ```bash
 python run.py hyperopt \
     --method pso \
@@ -76,23 +76,23 @@ python run.py hyperopt \
 
 ---
 
-## 📊 方案对比
+## Scheme Comparison
 
-| 特性 | 方案A（聚合） | 方案C（并行）⭐ |
-|------|-------------|----------------|
-| **目标** | 1组通用参数 | N组定制参数 |
-| **计算效率** | 低（串行） | 高（并行） |
-| **性能** | 平均最优 | 每个数据集最优 |
-| **部署** | 简单（统一配置） | 复杂（每个数据集不同） |
-| **GPU利用率** | 单GPU | 多GPU并行 |
-| **耗时（17数据集）** | ~250小时（单GPU） | ~83小时（24并行） |
-| **适用场景** | 数据集相似 | 数据集差异大 |
+| Feature | Scheme A (Aggregation) | Scheme C (Parallel) |
+|---------|------------------------|---------------------|
+| **Objective** | 1 set of universal parameters | N sets of customized parameters |
+| **Compute Efficiency** | Low (serial) | High (parallel) |
+| **Performance** | Average optimal | Optimal for each dataset |
+| **Deployment** | Simple (unified config) | Complex (different per dataset) |
+| **GPU Utilization** | Single GPU | Multi-GPU parallel |
+| **Time (17 datasets)** | ~250 hours (single GPU) | ~83 hours (24 parallel) |
+| **Use Case** | Similar datasets | Diverse datasets |
 
 ---
 
-## 💡 推荐工作流
+## Recommended Workflow
 
-### 阶段1：快速探索（方案C，轻量级）
+### Stage 1: Quick Exploration (Scheme C, lightweight)
 ```bash
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
@@ -103,10 +103,10 @@ python run.py multi-dataset-opt \
     --train_epochs 5 \
     --gpus 0 1 2
 ```
-**目的**：快速了解每个数据集的参数范围  
-**耗时**：~10小时
+**Purpose**: Quickly understand parameter ranges for each dataset
+**Time**: ~10 hours
 
-### 阶段2：深度优化（方案C，充分迭代）
+### Stage 2: Deep Optimization (Scheme C, full iteration)
 ```bash
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
@@ -117,15 +117,15 @@ python run.py multi-dataset-opt \
     --train_epochs 20 \
     --gpus 0 1 2
 ```
-**目的**：为重要数据集找到最佳参数  
-**耗时**：~30小时
+**Purpose**: Find best parameters for important datasets
+**Time**: ~30 hours
 
-### 阶段3（可选）：验证通用性（方案A）
+### Stage 3 (Optional): Verify Universality (Scheme A)
 ```bash
-# 应用补丁
+# Apply patch
 python apply_multi_dataset_patch.py
 
-# 测试是否存在通用参数
+# Test if universal parameters exist
 python run.py hyperopt \
     --method pso \
     --model MLP \
@@ -136,119 +136,119 @@ python run.py hyperopt \
     --train_epochs 10 \
     --gpu 0
 ```
-**目的**：测试是否可以用一组参数部署所有数据集  
-**耗时**：~50小时
+**Purpose**: Test if one parameter set can deploy all datasets
+**Time**: ~50 hours
 
 ---
 
-## 📁 结果文件结构
+## Result File Structure
 
-### 方案C结果
+### Scheme C Results
 ```
 hyperparam_search_results/
 └── multi_dataset_optimization_20260119_220045/
-    ├── summary.json             # 📊 汇总结果（最重要）
-    ├── summary.csv              # 📈 表格格式
-    ├── config.json              # ⚙️ 运行配置
+    ├── summary.json             # Summary results (most important)
+    ├── summary.csv              # Tabular format
+    ├── config.json              # Runtime configuration
     ├── HUST/
     │   ├── pso_MLP_HUST_xxx/
     │   │   ├── all_trials.csv
     │   │   └── best_params.json
     ├── CALB/
     │   └── pso_MLP_CALB_xxx/
-    └── ... (其他数据集)
+    └── ... (other datasets)
 ```
 
-**summary.json** 包含：
-- `best_params_per_dataset`: 每个数据集的最佳参数
-- `best_scores`: 每个数据集的最佳分数
-- `elapsed_times`: 每个数据集的优化耗时
-- `failed_datasets`: 失败的数据集列表
+**summary.json** contains:
+- `best_params_per_dataset`: Best parameters for each dataset
+- `best_scores`: Best scores for each dataset
+- `elapsed_times`: Optimization elapsed time for each dataset
+- `failed_datasets`: List of failed datasets
 
-### 方案A结果
+### Scheme A Results
 ```
 hyperparam_search_results/
 └── pso_MLP_HUST_CALB_CALCE_20260119_220045/
-    ├── all_trials.csv           # 所有试验
-    ├── best_params.json         # ✨ 最佳通用参数
-    └── search_config.json       # 配置
+    ├── all_trials.csv           # All trial records
+    ├── best_params.json         # Best universal parameters
+    └── search_config.json       # Search configuration
 ```
 
 ---
 
-## 🔧 常见调整
+## Common Adjustments
 
-### GPU内存不足
+### Insufficient GPU Memory
 ```bash
---max_workers_per_gpu 2  # 从4降到2
---batch_size 16          # 从32降到16
+--max_workers_per_gpu 2  # Reduce from 4 to 2
+--batch_size 16          # Reduce from 32 to 16
 ```
 
-### 加快测试速度
+### Speed Up Testing
 ```bash
---n_particles 10         # 从20降到10
---n_iterations 20        # 从50降到20
---train_epochs 5         # 从10降到5
+--n_particles 10         # Reduce from 20 to 10
+--n_iterations 20        # Reduce from 50 to 20
+--train_epochs 5         # Reduce from 10 to 5
 ```
 
-### 提高优化精度
+### Increase Optimization Precision
 ```bash
---n_particles 30         # 从20增到30
---n_iterations 100       # 从50增到100
---train_epochs 20        # 从10增到20
+--n_particles 30         # Increase from 20 to 30
+--n_iterations 100       # Increase from 50 to 100
+--train_epochs 20        # Increase from 10 to 20
 ```
 
 ---
 
-## 📚 文档导航
+## Documentation Navigation
 
-- **快速开始**: [QUICK_START_MULTI_DATASET.md](QUICK_START_MULTI_DATASET.md)
-- **完整文档**: [docs/MULTI_DATASET_OPTIMIZATION.md](docs/MULTI_DATASET_OPTIMIZATION.md)
-- **单数据集优化**: [docs/HYPERPARAMETER_OPTIMIZATION.md](docs/HYPERPARAMETER_OPTIMIZATION.md)
-- **项目日志**: [logs.md](logs.md)
-
----
-
-## 🎯 关键要点
-
-1. **推荐方案C**：充分利用6个GPU并行，为每个数据集定制参数
-2. **GPU配置**：6个GPU × 4任务/GPU = 最多24个并行优化任务
-3. **失败容错**：某个数据集训练失败不会影响其他数据集
-4. **自动调度**：脚本会自动将17个数据集分配到6个GPU上
-5. **方案A可选**：如果需要通用参数，运行补丁工具并参考文档修改
+- **Quick Start**: [QUICK_START_MULTI_DATASET.md](QUICK_START_MULTI_DATASET.md)
+- **Full Documentation**: [docs/MULTI_DATASET_OPTIMIZATION.md](docs/MULTI_DATASET_OPTIMIZATION.md)
+- **Single-Dataset Optimization**: [docs/HYPERPARAMETER_OPTIMIZATION.md](docs/HYPERPARAMETER_OPTIMIZATION.md)
+- **Project Log**: [logs.md](logs.md)
 
 ---
 
-## ⏱️ 耗时预估
+## Key Takeaways
 
-### 方案C（推荐）
-- **快速测试**（10粒子×20迭代×5轮）：~10小时
-- **标准优化**（20粒子×50迭代×10轮）：~40小时
-- **深度优化**（30粒子×100迭代×20轮）：~160小时
-
-### 方案A
-- **3个数据集**（20粒子×50迭代×10轮）：~50小时
-- **17个数据集**（20粒子×50迭代×10轮）：~300小时 ⚠️
+1. **Recommended Scheme C**: Fully utilize 6 GPUs in parallel, customize parameters for each dataset
+2. **GPU Configuration**: 6 GPUs × 4 tasks/GPU = up to 24 parallel optimization tasks
+3. **Failure Tolerance**: Training failure of one dataset does not affect other datasets
+4. **Automatic Scheduling**: Script automatically distributes 17 datasets across 6 GPUs
+5. **Scheme A Optional**: Run patch tool and refer to documentation if universal parameters are needed
 
 ---
 
-## 🚨 注意事项
+## Time Estimation
 
-1. **先测试后大规模运行**：用3个数据集测试成功后再跑全部17个
-2. **监控GPU使用**：确保每个GPU都有任务在运行
-3. **检查失败任务**：查看summary.json中的failed_datasets
-4. **保存中间结果**：每个数据集的结果独立保存，可随时中断
-5. **备份重要结果**：summary.json包含所有关键信息
+### Scheme C (Recommended)
+- **Quick Test** (10 particles × 20 iterations × 5 epochs): ~10 hours
+- **Standard Optimization** (20 particles × 50 iterations × 10 epochs): ~40 hours
+- **Deep Optimization** (30 particles × 100 iterations × 20 epochs): ~160 hours
+
+### Scheme A
+- **3 Datasets** (20 particles × 50 iterations × 10 epochs): ~50 hours
+- **17 Datasets** (20 particles × 50 iterations × 10 epochs): ~300 hours
 
 ---
 
-## ✨ 开始使用
+## Important Notes
+
+1. **Test Before Full Run**: Test with 3 datasets first before running all 17
+2. **Monitor GPU Usage**: Ensure each GPU has tasks running
+3. **Check Failed Tasks**: View failed_datasets in summary.json
+4. **Save Intermediate Results**: Each dataset's results are saved independently, can be interrupted at any time
+5. **Backup Important Results**: summary.json contains all key information
+
+---
+
+## Getting Started
 
 ```bash
-# 1. 激活环境
+# 1. Activate environment
 conda activate batterylife
 
-# 2. 快速测试（3个数据集，~2小时）
+# 2. Quick test (3 datasets, ~2 hours)
 python run.py multi-dataset-opt \
     --datasets HUST CALB CALCE \
     --method pso \
@@ -259,12 +259,12 @@ python run.py multi-dataset-opt \
     --gpus 0 1 \
     --max_workers_per_gpu 2
 
-# 3. 查看结果
+# 3. View results
 cat hyperparam_search_results/multi_dataset_optimization_*/summary.json
 ```
 
 ---
 
-**祝优化顺利！** 🎉
+**Happy optimizing!**
 
-有问题请查看详细文档或联系开发者。
+For questions, see detailed documentation or contact the developer.
